@@ -52,15 +52,26 @@ struct matrixConvCoreFunctor
 };
 
 
+int computeUpperN( int N )
+{
+  while ( N % 16 )
+  {
+    ++N;
+  }
+  return N;
+}
+
+
 template <class T>
 bool test( std::vector<T> const & input,
            std::vector<T> const & mask,
            std::vector<T> & output,
            size_t N, size_t M)
 {
-  size_t const matrix_size = N * N;
+  size_t const upper_N = computeUpperN(N);
+  size_t const matrix_size = upper_N * upper_N;
   size_t const mask_size = M * M;
-  size_t const block_size = 1;
+  size_t const block_size = 16;
 
   if (mask.size() < mask_size || input.size() < matrix_size || output.size() < matrix_size) {
     throw std::runtime_error("size of vectors a too small");
@@ -87,7 +98,7 @@ bool test( std::vector<T> const & input,
 
   init_box.queue.enqueueNDRangeKernel(kernel,
                                       cl::NullRange,
-                                      cl::NDRange(N, N),
+                                      cl::NDRange(upper_N, upper_N),
                                       cl::NDRange(block_size, block_size));
 
   init_box.queue.enqueueReadBuffer(dev_output, CL_TRUE,
@@ -105,7 +116,7 @@ int main()
   std::vector<size_t> const N_array = {1024, 1024, 1, 31, 1023};
   std::vector<size_t> const M_array = {3, 9, 9, 9, 9};
 
-  size_t const max_N = *std::max_element(N_array.begin(), N_array.end());
+  size_t const max_N = 1024;
   size_t const max_M = *std::max_element(M_array.begin(), M_array.end());
   size_t const min_size = std::min(N_array.size(), M_array.size());
 
