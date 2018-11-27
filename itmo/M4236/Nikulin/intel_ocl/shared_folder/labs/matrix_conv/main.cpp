@@ -117,8 +117,8 @@ int main()
   {
     size_t const N = N_array[i];
     size_t const M = M_array[i];
-    std::fill_n(input.begin(),  N, 1);
-    std::fill_n(mask.begin(),   M, 1);
+    std::fill_n(input.begin(),  N*N, 1);
+    std::fill_n(mask.begin(),   M*M, 1);
     std::fill(output.begin(), output.end(), 0);
 
     if ( !test(input, mask, output, N, M) )
@@ -131,11 +131,7 @@ int main()
     }
   }
 
-
   std::cout << "all tests passed" << std::endl;
-
-
-
   return 0;
 }
 
