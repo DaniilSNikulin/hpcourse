@@ -2,10 +2,12 @@
 
 docker build -t nikdan/ocl .
 
-docker run \
+docker run -d \
     -it \
-    --name ocl_deamon \
+    --name ocl_daemon \
     --device /dev/dri:/dev/dri \
     --mount type=bind,source="$(pwd)"/shared_folder,target=/home/nikdan/ocl \
-    nikdan/ocl clinfo
+    nikdan/ocl bash
+
+docker container stop ocl_daemon
 

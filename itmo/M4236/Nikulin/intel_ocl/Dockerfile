@@ -16,5 +16,7 @@ RUN cp /tmp/ubuntu18.04.sources.list /etc/apt/sources.list \
         useradd -m nikdan -p nikdan -G sudo \
         && \
         mkdir /home/nikdan/ocl
+        && \
+        clinfo
 WORKDIR /home/nikdan
 
