@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <algorithm>
+#include <chrono>
 
 #include <fstream>
 #include <iostream>
@@ -16,6 +17,29 @@
 
 #include <exception>
 #include <stdexcept>
+
+
+template <class Period = std::ratio<1>>
+class Timer
+{
+  public:
+    Timer() : beg_(clock_::now())
+    {}
+
+    void reset() {
+      beg_ = clock_::now();
+    }
+
+    double elapsed() const {
+      return std::chrono::duration_cast<duration_>
+        (clock_::now() - beg_).count();
+    }
+
+  private:
+    typedef std::chrono::high_resolution_clock clock_;
+    typedef std::chrono::duration<double, Period> duration_;
+    std::chrono::time_point<clock_> beg_;
+};
 
 
 
@@ -48,6 +72,24 @@ bool check(std::vector<T> const & a,
   }
   for (size_t i = 0; i < c.size(); ++i) {
     if (c[i] != f(a, b, i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<class T, class CoreFunction>
+bool check(std::vector<T> const & a,
+           std::vector<T> const & c,
+           CoreFunction f,
+           size_t size)
+{
+  const double eps = 1e-8;
+  if (c.size() < size) {
+    return false;
+  }
+  for (size_t i = 0; i < size; ++i) {
+    if (std::abs(c[i] - f(a, i)) > eps) {
       return false;
     }
   }
